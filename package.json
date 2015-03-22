@@ -11,5 +11,10 @@
     "url": " https://github.com/whtflower/priavate_chatroom.git"
   },
   "author": "SoYoung Choi-Lucas",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.12.3",
+    "redis": "^0.12.1",
+    "socket.io": "^1.3.5"
+  }
 }
