@@ -6,11 +6,6 @@ var express = require('express'),
     client = redis.createClient(),
     users = {};
 
-
-
-
-
-
 client.SMEMBERS("nickname", function(err, names){
    nicknames = names;
 });
@@ -25,17 +20,12 @@ app.use(express.static(__dirname + '/public'));
 
 io.sockets.on('connection', function(socket){
   socket.on('join', function(name, callback){
-    console.log('users:',users);
     if (name in users){
       callback(false);
     } else {
       callback(true);
       socket.broadcast.emit("add chatter", name);
-      // client.SMEMBERS('names', function(err, names){
-        // names.forEach(function(name){
-          io.sockets.emit('add chatter', name);
-        // });
-      // });
+      io.sockets.emit('add chatter', name);
       client.sadd("nickname", name);
       socket.nickname = name; 
       users[socket.nickname] = socket;
@@ -44,9 +34,7 @@ io.sockets.on('connection', function(socket){
   });
 
   function updateNicknames(){
-    // client.SMEMBERS("nickname", function(err, names){
-        io.sockets.emit('usernames', Object.keys(users));
-    // });
+    io.sockets.emit('usernames', Object.keys(users));
   }
 
   socket.on('send message', function(data, callback){
@@ -59,7 +47,6 @@ io.sockets.on('connection', function(socket){
          msg = msg.substring(ind + 1);
         if (name in users){
           users[name].emit('whisper', {msg: msg, nick: socket.nickname});
-          console.log('whisper');
         } else {
           callback('Error, enter a valid user.');
         }
